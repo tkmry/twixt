@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+ <head>
+  <style>
+    input[type="radio"].turner {
+        /* display: none; */
+    }
+
+    #turn_message p.message {
+        display: none;
+    }
+
+    .turner.red.stone:checked ~ #turn_message p.message.red.stone {
+        display: block;
+    }
+    .turner.red.arch:checked ~ #turn_message p.message.red.arch {
+        display: block;
+    }
+    .turner.blue.stone:checked ~ #turn_message p.message.blue.stone {
+        display: block;
+    }
+    .turner.blue.arch:checked ~ #turn_message p.message.blue.arch {
+        display: block;
+    }
+
+    .turner.arch:checked ~ table td {
+        opacity: 0.5;
+    }
+    .turner.red.arch:checked ~ table td.cell.red {
+        opacity: 1;
+        cursor: pointer;
+    }
+    .turner.red.arch:checked ~ table td.cell.blue {
+        opacity: 0.3;
+    }
+    .turner.blue.arch:checked ~ table td.cell.blue {
+        opacity: 1;
+        cursor: pointer;
+    }
+    .turner.blue.arch:checked ~ table td.cell.red {
+        opacity: 0.3;
+    }
+
+    td {
+        width: 20px;
+        height: 20px;
+    }
+
+    tr td {
+        cursor: pointer;
+        border-radius: 10px;
+        position: relative;
+    }
+    .turner.arch:checked ~ table tr td.cell {
+        cursor: auto;
+    }
+    .turner.stone:checked ~ table tr td.cell.stoned {
+        cursor: auto;
+    }
+
+    tr.odd td.odd {
+        background-color: white;
+    }
+    tr.odd td.even {
+        background-color: gray;
+    }
+    tr.even td.odd {
+        background-color: gray;
+    }
+    tr.even td.even {
+        background-color: white;
+    }
+
+    tr td.cell.red {
+        background-color: red;
+    }
+    tr td.cell.blue {
+        background-color: blue;
+    }
+
+    tr td.cell.arch_select {
+        -webkit-transform: scale(1.5);
+    }
+
+    tr td.cell img.arch {
+        position: absolute;
+        left: 10px;
+        z-index: 2;
+
+        -webkit-transform-origin: 0 0; 
+    }
+
+    /* pNpM: p == plus, m = minus, N = x, M = y */
+    tr td.cell img.arch.p2p1 {
+        -webkit-transform: rotate(26deg);
+    }
+    tr td.cell img.arch.p1p2 {
+        -webkit-transform: rotate(62deg);
+    }
+    tr td.cell img.arch.p2m1 {
+        -webkit-transform: rotate(-27deg);
+    }
+    tr td.cell img.arch.p1m2 {
+        -webkit-transform: rotate(-63deg);
+    }
+
+  </style>
+ </head>
+ <body>
+  <h1>Twixt Offline</h1>
+  <input type="radio" class="turner red stone " name="turn" value="red stone" checked="checked" />
+  <input type="radio" class="turner red arch"   name="turn" value="red arch" />
+  <input type="radio" class="turner blue stone" name="turn" value="blue stone" />
+  <input type="radio" class="turner blue arch"   name="turn" value="blue arch" />
+  <div id="turn_message">
+    <p class="message red stone">現在赤の手番です</p>
+    <p class="message red arch">現在赤の橋の手番です</p>
+    <p class="message blue stone">現在青の手番です</p>
+    <p class="message blue arch">現在青の橋の手番です</p>
+  </div>
+  <table border="1">
+    <tr class="odd">
+     <td class="odd cell"></td>
+     <td class="even cell"></td>
+     <td class="odd cell"></td>
+     <td class="even cell"></td>
+    </tr>
+    <tr class="even">
+     <td class="odd cell"></td>
+     <td class="even cell"></td>
+     <td class="odd cell"></td>
+     <td class="even cell"></td>
+    </tr>
+    <tr class="odd">
+     <td class="odd cell"></td>
+     <td class="even cell"></td>
+     <td class="odd cell"></td>
+     <td class="even cell"></td>
+    </tr>
+    <tr class="even">
+     <td class="odd cell"></td>
+     <td class="even cell"></td>
+     <td class="odd cell"></td>
+     <td class="even cell"></td>
+    </tr>
+  </table>
+  <input id="turn_end" type="button" value="end" />
+  <script>
+    var color_index = 0;
+    var colors = ['red', 'blue'];
+    var is_setted = false;
+
+    var arch_start = {x:0, y:0}
+
+    function getXYofCell(elm) {
+        var row, x, y;
+
+        row = elm.parentNode;
+        x = Array.apply(0, row.querySelectorAll('td')).indexOf(elm);
+        y = Array.apply(0, row.parentNode.querySelectorAll('tr')).indexOf(row);
+
+        return {x: x, y: y};
+    }
+
+    /* 橋をかける処理 */
+    document.body.addEventListener('click', function(ev) {
+        var el = ev.target;
+        var color = colors[color_index];
+
+        if (!el.className.match(/\bcell\b/)) {
+            return; /* マスに対するクリックではない */
+        }
+
+        if (!document.querySelector('.turner.arch:checked')){
+            return; /* 現在橋をかける時ではない */
+        }
+
+        if (!el.className.match(new RegExp('\\b' + color + '\\b'))) {
+            return; /* 自分の石ではない */
+        }
+
+        if (!document.querySelector('.arch_select')) {
+            el.classList.add('arch_select');
+        }
+        else {
+            document.querySelector('.arch_select').classList.remove('arch_select');
+        }
+
+    }, true);
+
+    /* 石を置く処理 */
+    document.body.addEventListener('click', function(ev) {
+
+        if (!ev.target.className.match(/\bcell\b/)) {
+            return; /* マスに対するクリックではない */
+        }
+
+        if (!is_setted) {
+            ev.target.className = ev.target.className.replace(new RegExp(colors[color_index], 'g'), '');
+            color = colors[color_index];
+            ev.target.className += ' stoned ' + color;
+            is_setted = true;
+
+            console.log(color);
+
+            document.body.querySelector('input.' + color + '.arch').checked = true;
+        }
+    }, true);
+
+    /* ターンエンド処理 */
+    document.body.querySelector('#turn_end').addEventListener('click', function() {
+
+        var color;
+
+        if (!document.querySelector('.turner.arch:checked')){
+            return; /* まだ石を置いてない */
+        }
+
+        color_index = (color_index + 1) % colors.length;
+        color = colors[color_index];
+
+        document.body.querySelector('input.' + color + '.stone').checked = true;
+
+        if (document.querySelector('.arch_select')) {
+            document.querySelector('.arch_select').classList.remove('arch_select');
+        }
+        
+        is_setted = false;
+    });
+  </script>
+  <div><img src="./blue_arch.png" /></div>
+  <div><img src="./red_arch.png" /></div>
+ </body>
+</html>
+
