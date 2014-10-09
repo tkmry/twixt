@@ -1,25 +1,33 @@
 <!DOCTYPE html>
 <html lang="ja">
  <head>
-  <style>
+<meta http-equiv="Content-Type" content="utf-8" />   <style>
     input[type="radio"].turner {
-        /* display: none; */
+        display: none;
     }
 
     #turn_message p.message {
         display: none;
+        padding: 0.5em;
+        color: white;
+        font-weight: bold;
+        text-align: center; 
     }
 
     .turner.red.stone:checked ~ #turn_message p.message.red.stone {
+        background-color: red;
         display: block;
     }
     .turner.red.arch:checked ~ #turn_message p.message.red.arch {
+        background-color: red;
         display: block;
     }
     .turner.blue.stone:checked ~ #turn_message p.message.blue.stone {
+        background-color: blue;
         display: block;
     }
     .turner.blue.arch:checked ~ #turn_message p.message.blue.arch {
+        background-color: blue;
         display: block;
     }
 
@@ -41,6 +49,18 @@
         opacity: 0.3;
     }
 
+    #control_box {
+        text-align: center;
+        height: 48px;
+    }
+    #control_box input#turn_end {
+    }
+    .turner.arch:checked ~ #control_box input#turn_end {
+        font-size: 22px;
+        width: 60px;
+        height: 30px;
+    }
+
     td {
         width: 20px;
         height: 20px;
@@ -51,6 +71,44 @@
         border-radius: 10px;
         position: relative;
     }
+
+    tr:first-child > td,
+    tr:last-child > td {
+        outline: 1px solid blue;
+    }
+    tr > td:first-child,
+    tr > td:last-child {
+        outline: 1px solid red;
+    }
+
+    /* 角の一マスは使用できないルールです */
+    tr:first-child > td:first-child,
+    tr:first-child > td:last-child,
+    tr:last-child > td:first-child,
+    tr:last-child > td:last-child {
+        visibility: hidden;
+    }
+
+    /* 盤面のサイズを変更して遊ぶ場合に使用します */
+    tr:first-child >td:nth-child(18),
+    tr:nth-child(18) > td:first-child, 
+    tr:nth-child(18) > td:nth-child(18) {
+        visibility: hidden;
+    }
+    tr td:nth-child(18)~td {
+        display: none;
+    }
+    tr:nth-child(18)~tr {
+        display: none;
+    }
+    tr:nth-child(18) > td {
+        outline: 1px solid blue;
+    }
+    tr > td:nth-child(18) {
+        outline: 1px solid red;
+    }
+    /* */
+
     .turner.arch:checked ~ table tr td.cell {
         cursor: auto;
     }
@@ -62,10 +120,10 @@
         background-color: white;
     }
     tr.odd td.even {
-        background-color: gray;
+        background-color: #ccc;
     }
     tr.even td.odd {
-        background-color: gray;
+        background-color: #ccc;
     }
     tr.even td.even {
         background-color: white;
@@ -80,6 +138,9 @@
 
     tr td.cell.arch_select {
         -webkit-transform: scale(1.5);
+    }
+    tr td.cell.arch_select img {
+        -webkit-transform: scale(0.66);
     }
 
     tr td.cell img.arch {
@@ -113,44 +174,24 @@
   <input type="radio" class="turner blue stone" name="turn" value="blue stone" />
   <input type="radio" class="turner blue arch"   name="turn" value="blue arch" />
   <div id="turn_message">
-    <p class="message red stone">現在赤の手番です</p>
-    <p class="message red arch">現在赤の橋の手番です</p>
-    <p class="message blue stone">現在青の手番です</p>
-    <p class="message blue arch">現在青の橋の手番です</p>
+    <p class="message red stone">石を置いてください</p>
+    <p class="message red arch">橋を掛けられます</p>
+    <p class="message blue stone">石を置いてください</p>
+    <p class="message blue arch">橋を掛けられます</p>
   </div>
-  <table border="1">
-    <tr class="odd">
-     <td class="odd cell"></td>
-     <td class="even cell"></td>
-     <td class="odd cell"></td>
-     <td class="even cell"></td>
-    </tr>
-    <tr class="even">
-     <td class="odd cell"></td>
-     <td class="even cell"></td>
-     <td class="odd cell"></td>
-     <td class="even cell"></td>
-    </tr>
-    <tr class="odd">
-     <td class="odd cell"></td>
-     <td class="even cell"></td>
-     <td class="odd cell"></td>
-     <td class="even cell"></td>
-    </tr>
-    <tr class="even">
-     <td class="odd cell"></td>
-     <td class="even cell"></td>
-     <td class="odd cell"></td>
-     <td class="even cell"></td>
-    </tr>
+  <div id="control_box">
+    <input id="turn_end" type="button" value="end" />
+  </div>
+  <table border="1" align="center">
+    <tbody>
+    </tbody>
   </table>
-  <input id="turn_end" type="button" value="end" />
   <script>
     var color_index = 0;
     var colors = ['red', 'blue'];
     var is_setted = false;
 
-    var arch_start = {x:0, y:0}
+    var selected_stone_elm;
 
     function getXYofCell(elm) {
         var row, x, y;
@@ -162,7 +203,95 @@
         return {x: x, y: y};
     }
 
-    /* 橋をかける処理 */
+    /* {x:, y:} オブジェクトを (p/m)N(p/m)M に変換します */
+    function xyToClassName(obj) {
+        var s = "";
+
+        s += (obj.x < 0 ? 'm' : 'p');
+        s += Math.abs(obj.x);
+
+        s += (obj.y < 0 ? 'm' : 'p');
+        s += Math.abs(obj.y);
+
+        return s;
+    }
+
+    /* 橋を掛けられるか確認します */
+    function canSetArch(elm1, elm2) {
+        var xy1, xy2;
+
+        xy1 = getXYofCell(elm1);
+        xy2 = getXYofCell(elm2);
+
+        if (Math.abs(xy1.x - xy2.x) == 1) {
+            if (Math.abs(xy1.y - xy2.y) == 2) {
+                return true;
+            }
+        }
+        else if (Math.abs(xy1.y - xy2.y) == 1) {
+            if (Math.abs(xy1.x - xy2.x) == 2) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /* 橋をかける処理を行います */
+    function setArch(start_elm, vector) {
+        img = document.createElement('img');
+        img.src = colors[color_index]+'_arch.png';
+        img.classList.add('arch');
+        img.classList.add(xyToClassName(vector));
+
+        start_elm.appendChild(img);
+    }
+
+    /* 橋を外す処理を行います */
+    function removeArch(elm) {
+        elm.removeChild(elm.querySelector('.arch'));
+    }
+
+    /* 橋をかけるか外します */
+    function toggleArch(elm1, elm2) {
+        var xy1, xy2, xy_tmp;
+        var start_elm, end_elm;
+
+        var img;
+        var vector;
+        
+        xy1 = getXYofCell(elm1);
+        xy2 = getXYofCell(elm2);
+
+        if (xy1.x < xy2.x) {
+            start_elm = elm1;
+            end_elm = elm2;
+
+            console.log(true);
+        }
+        else {
+            start_elm = elm2;
+            end_elm = elm1;
+
+            xy_tmp = xy1;
+            xy1 = xy2;
+            xy2 = xy_tmp;
+        }
+
+        vector = {
+            x: (xy2.x - xy1.x),
+            y: (xy2.y - xy1.y)
+        };
+
+        if (!start_elm.querySelector('.arch.'+xyToClassName(vector))) {
+            setArch(start_elm, vector);
+        }
+        else {
+            removeArch(start_elm);
+        }
+
+    }
+
+    /* 橋を置くためのクリックイベント処理 */
     document.body.addEventListener('click', function(ev) {
         var el = ev.target;
         var color = colors[color_index];
@@ -179,11 +308,21 @@
             return; /* 自分の石ではない */
         }
 
-        if (!document.querySelector('.arch_select')) {
+        if (!selected_stone_elm) {
             el.classList.add('arch_select');
+            selected_stone_elm = el;
+        }
+        else if (selected_stone_elm == el) {
+            document.querySelector('.arch_select').classList.remove('arch_select');
+            selected_stone_elm = null;
+        }
+        else if (!canSetArch(selected_stone_elm, el)) {
         }
         else {
+            toggleArch(selected_stone_elm, el);
+
             document.querySelector('.arch_select').classList.remove('arch_select');
+            selected_stone_elm = null;
         }
 
     }, true);
@@ -195,7 +334,15 @@
             return; /* マスに対するクリックではない */
         }
 
-        if (!is_setted) {
+        /* document.defaultView.getComputedStyle(td).outlineColor.match(/(\d+), (\d+), (\d+)/)[3] == 255 */
+
+        if (is_setted) {
+            /* pass */
+        }
+        else if (ev.target.classList.contains('stoned')) {
+            /* pass */
+        }
+        else {
             ev.target.className = ev.target.className.replace(new RegExp(colors[color_index], 'g'), '');
             color = colors[color_index];
             ev.target.className += ' stoned ' + color;
@@ -223,13 +370,31 @@
 
         if (document.querySelector('.arch_select')) {
             document.querySelector('.arch_select').classList.remove('arch_select');
+            selected_stone_elm = null;
         }
         
         is_setted = false;
     });
+
+    /* 起動時処理 */
+    (function () {
+        var tbody = document.querySelector('tbody');
+        var tr, td;
+
+        var col, row;
+
+        for (row = 0; row < 26; ++row) {
+            tr = tbody.appendChild(document.createElement('tr'));
+            tr.classList.add(['odd', 'even'][row %2]);
+
+            for (col = 0; col < 26; ++col) {
+                td = tr.appendChild(document.createElement('td'));
+                td.classList.add('cell');
+                td.classList.add(['odd', 'even'][col % 2]);
+            }
+        }
+    })();
   </script>
-  <div><img src="./blue_arch.png" /></div>
-  <div><img src="./red_arch.png" /></div>
  </body>
 </html>
 
