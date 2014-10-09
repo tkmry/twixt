@@ -8,6 +8,7 @@
 
     #turn_message p.message {
         display: none;
+        margin: 0;
         padding: 0.5em;
         color: white;
         font-weight: bold;
@@ -50,10 +51,15 @@
     }
 
     #control_box {
+        margin: 10px;
         text-align: center;
-        height: 48px;
+        line-height: 30px;
+    }
+    #control_box #timer {
+        text-align: right;
     }
     #control_box input#turn_end {
+        height: 30px;
     }
     .turner.arch:checked ~ #control_box input#turn_end {
         font-size: 22px;
@@ -187,6 +193,7 @@
     <p class="message blue arch">橋を掛けられます</p>
   </div>
   <div id="control_box">
+    残り<input id="timer" type="text" size="3" value="30" />sec<br />
     <input id="turn_end" type="button" value="end" />
   </div>
   <table border="1" align="center">
@@ -198,6 +205,8 @@
     var colors = ['red', 'blue'];
     var is_setted = false;
     var src_arch = {red: "", blue: ""};
+    var timer_id = null;
+    var time_limit = 30;
 
     var selected_stone_elm;
 
@@ -335,6 +344,24 @@
 
     }, true);
 
+    /* Timer 観測者 */
+    function timeObserver() {
+        var n, timer_elm;
+
+        timer_elm = document.querySelector('#timer');
+        n = parseInt(timer_elm.value);
+
+        n--;
+        timer_elm.value = n;
+
+        if (n <= 0) {
+            alert('Time out');
+        }
+        else {
+            timer_id = setTimeout(timeObserver, 1000);
+        }
+    }
+
     /* 石を置く処理 */
     document.body.addEventListener('click', function(ev) {
         var outline_color;
@@ -369,9 +396,13 @@
             ev.target.className += ' stoned ' + color;
             is_setted = true;
 
-            console.log(color);
-
             document.body.querySelector('input.' + color + '.arch').checked = true;
+
+            if (timer_id == null) {
+                setTimeout(timeObserver, 1000);
+                time_limit = parseInt(document.querySelector('#timer').value);
+                document.querySelector('#timer').disabled = true;
+            }
         }
     }, true);
 
@@ -395,6 +426,10 @@
         }
         
         is_setted = false;
+
+        clearTimeout(timer_id);
+        setTimeout(timeObserver, 1000);
+        document.querySelector('#timer').value = time_limit;
     });
 
     /* 起動時処理 */
