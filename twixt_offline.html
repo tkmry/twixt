@@ -337,6 +337,7 @@
 
     /* 石を置く処理 */
     document.body.addEventListener('click', function(ev) {
+        var outline_color;
 
         if (!ev.target.className.match(/\bcell\b/)) {
             return; /* マスに対するクリックではない */
@@ -344,10 +345,22 @@
 
         /* document.defaultView.getComputedStyle(td).outlineColor.match(/(\d+), (\d+), (\d+)/)[3] == 255 */
 
+        outline_color = document.defaultView.getComputedStyle(ev.target).outlineColor;
+
         if (is_setted) {
             /* pass */
         }
         else if (ev.target.classList.contains('stoned')) {
+            /* pass */
+        }
+        else if (colors[color_index] == 'blue' &&
+                 outline_color.match(/(\d+), (\d+), (\d+)/)[1] == 255) {
+            console.log('blue', outline_color.match(/(\d+), (\d+), (\d+)/));
+            /* pass */
+        }
+        else if (colors[color_index] == 'red' &&
+                 outline_color.match(/(\d+), (\d+), (\d+)/)[3] == 255) {
+            console.log('red', outline_color.match(/(\d+), (\d+), (\d+)/));
             /* pass */
         }
         else {
