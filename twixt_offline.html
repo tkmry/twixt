@@ -303,8 +303,8 @@
     }
 
     /* 橋を外す処理を行います */
-    function removeArch(elm) {
-        elm.removeChild(elm.querySelector('.arch'));
+    function removeArch(elm, vector) {
+        elm.removeChild(elm.querySelector('.arch.' + xyToClassName(vector)));
     }
 
     /* 橋をかけるか外します */
@@ -342,7 +342,7 @@
             arches.push([xy1, xy2]);
         }
         else {
-            removeArch(start_elm);
+            removeArch(start_elm, vector);
             arches = arches.filter(function(v) {
                 return (v[0].x != xy1.x &&
                         v[0].y != xy1.y &&
