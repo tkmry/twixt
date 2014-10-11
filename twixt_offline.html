@@ -208,9 +208,40 @@
     var src_arch = {red: "", blue: ""};
     var timer_id = null;
     var time_limit = 30;
+    var arches = [];
 
     var selected_stone_elm;
 
+    /**
+     * 交点を求めるのに使用する計算式を生成します
+     **/
+    function generateCrossFunctions(pt1, pt2) {
+        var x1 = pt1.x,
+            y1 = pt1.y,
+            x2 = pt2.x,
+            y2 = pt2.y;
+        return function f(pt) {
+            return (pt.y - y1) * (x1 - x2) - (pt.x - x1) * (y1 - y2);
+        }
+    }
+
+    function isAcross(ptA1, ptA2, ptB1, ptB2) {
+        var fA, fB;
+
+        fA = generateCrossFunctions(ptA1, ptA2);
+        fB = generateCrossFunctions(ptB1, ptB2);
+
+        if (fA(ptB1) * fA(ptB2) >= 0) {
+            return false; /* 線分Aの直線式を線分Bの端点がまたいでない */
+        }
+        if (fB(ptA1) * fB(ptA2) >= 0) {
+            return false; /* 線分Bの直線式を線分Aの端点がまたいでない */
+        }
+
+        return true;
+    }
+
+    /* 要素を入力して x, y 座標を計算します */
     function getXYofCell(elm) {
         var row, x, y;
 
@@ -241,6 +272,12 @@
         xy1 = getXYofCell(elm1);
         xy2 = getXYofCell(elm2);
 
+        if (arches.some(function(o) {
+            return isAcross(xy1, xy2, o[0], o[1]);
+        })) {
+            return false;
+        }
+
         if (Math.abs(xy1.x - xy2.x) == 1) {
             if (Math.abs(xy1.y - xy2.y) == 2) {
                 return true;
@@ -251,6 +288,7 @@
                 return true;
             }
         }
+
         return false;
     }
 
@@ -283,8 +321,6 @@
         if (xy1.x < xy2.x) {
             start_elm = elm1;
             end_elm = elm2;
-
-            console.log(true);
         }
         else {
             start_elm = elm2;
@@ -302,11 +338,18 @@
 
         if (!start_elm.querySelector('.arch.'+xyToClassName(vector))) {
             setArch(start_elm, vector);
+
+            arches.push([xy1, xy2]);
         }
         else {
             removeArch(start_elm);
+            arches = arches.filter(function(v) {
+                return (v[0].x != xy1.x &&
+                        v[0].y != xy1.y &&
+                        v[1].x != xy2.x &&
+                        v[1].y != xy2.y);
+            });
         }
-
     }
 
     /* 橋を置くためのクリックイベント処理 */
@@ -370,8 +413,6 @@
         if (!ev.target.className.match(/\bcell\b/)) {
             return; /* マスに対するクリックではない */
         }
-
-        /* document.defaultView.getComputedStyle(td).outlineColor.match(/(\d+), (\d+), (\d+)/)[3] == 255 */
 
         outline_color = document.defaultView.getComputedStyle(ev.target).outlineColor;
 
