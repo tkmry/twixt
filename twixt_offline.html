@@ -6,6 +6,9 @@
     input[type="radio"].turner {
         display: none;
     }
+    input[type="radio"].board_size {
+        display: none;
+    }
 
     #turn_message p.message {
         display: none;
@@ -96,25 +99,39 @@
         visibility: hidden;
     }
 
-    /* 盤面のサイズを変更して遊ぶ場合に使用します */
-    tr:first-child >td:nth-child(18),
-    tr:nth-child(18) > td:first-child, 
-    tr:nth-child(18) > td:nth-child(18) {
+    /* サイズを12に変更して遊びます */
+    input.board_size.size12:checked ~ table tr:first-child > td:nth-child(12),
+    input.board_size.size12:checked ~ table tr:nth-child(12) > td:first-child, 
+    input.board_size.size12:checked ~ table tr:nth-child(12) > td:nth-child(12) {
         visibility: hidden;
     }
-    tr td:nth-child(18)~td {
+    input.board_size.size12:checked ~ table tr td:nth-child(12) ~ td, 
+    input.board_size.size12:checked ~ table tr:nth-child(12) ~ tr {
         display: none;
     }
-    tr:nth-child(18)~tr {
-        display: none;
-    }
-    tr:nth-child(18) > td {
+    input.board_size.size12:checked ~ table tr:nth-child(12) > td {
         outline: 1px solid blue;
     }
-    tr > td:nth-child(18) {
+    input.board_size.size12:checked ~ table tr > td:nth-child(12) {
         outline: 1px solid red;
     }
-    /* */
+
+    /* サイズを18に変更して遊びます */
+    input.board_size.size18:checked ~ table tr:first-child > td:nth-child(18),
+    input.board_size.size18:checked ~ table tr:nth-child(18) > td:first-child, 
+    input.board_size.size18:checked ~ table tr:nth-child(18) > td:nth-child(18) {
+        visibility: hidden;
+    }
+    input.board_size.size18:checked ~ table tr td:nth-child(18) ~ td, 
+    input.board_size.size18:checked ~ table tr:nth-child(18) ~ tr {
+        display: none;
+    }
+    input.board_size.size18:checked ~ table tr:nth-child(18) > td {
+        outline: 1px solid blue;
+    }
+    input.board_size.size18:checked ~ table tr > td:nth-child(18) {
+        outline: 1px solid red;
+    }
 
     .turner.arch:checked ~ table tr td.cell {
         cursor: auto;
@@ -192,6 +209,10 @@
   <input type="radio" class="turner red arch"   name="turn" value="red arch" />
   <input type="radio" class="turner blue stone" name="turn" value="blue stone" />
   <input type="radio" class="turner blue arch"   name="turn" value="blue arch" />
+
+  <input type="radio" id="size12" name="board_size" class="board_size size12" value="12" />
+  <input type="radio" id="size18" name="board_size" class="board_size size18" value="18" checked />
+  <input type="radio" id="size26" name="board_size" class="board_size size26" value="26" />
   <div id="turn_message">
     <p class="message red stone">石を置いてください</p>
     <p class="message red arch">橋を掛けられます</p>
@@ -199,6 +220,7 @@
     <p class="message blue arch">橋を掛けられます</p>
   </div>
   <div id="control_box">
+    <label for="size12">12マス</label> <label for="size18">18マス</label> <label for="size26">26マス</label> <br />
     残り<input id="timer" type="text" size="3" value="30" />sec<br />
     <input id="turn_end" type="button" value="end" />
   </div>
@@ -506,9 +528,10 @@
     })();
   </script>
   <div id="footer">
-    This page for Chromium(google chrome), Firefox. Never for IE.<br />
+    This page for <a href="http://www.chromium.org/">Chromium</a>(<a href="https://www.google.co.jp/chrome/browser/">google chrome</a>), <a href="https://www.mozilla.org/firefox">Firefox</a>. Never for IE.<br />
     Twixt is invented by Alex Randolph.<br />
-    This page created by tkmry 2014/10/08-.
+    This page created by <a href="http://github.com/tkmry">tkmry</a> 2014/10/08-.
   </div>
  </body>
 </html>
+
