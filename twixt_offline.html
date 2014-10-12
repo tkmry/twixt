@@ -229,6 +229,14 @@
     </tbody>
   </table>
   <script>
+    /**
+     * TODO: 毎ターン開始ごとに石/橋の状態を取得してhistoryに納めundo(待った)を作る
+     * TODO: Twixts オブジェクトにグローバル変数をまとめる
+     * TODO: 勝利条件を満たしているかのチェック関数を作る
+     */
+
+    var Twixt = {}; /* あとでこの変数にまとめる */
+
     var color_index = 0;
     var colors = ['red', 'blue'];
 
@@ -236,12 +244,22 @@
 
     var timer_id = null;
     var time_limit = 30;
+    var board_size = 18;
 
     var selected_stone_elm;
-    var arches = [];
+    var arches = {red: [], blue: []};
 
     var is_setted = false;
     var is_game_over = false;
+
+    /**
+     * 勝負が決まっているか確認
+     **/
+    function isVictoried() {
+        var color;
+
+        color = colors[color_index];
+    }
 
     /**
      * 交点の有無を求めるのに使用する計算式を生成します
@@ -298,14 +316,14 @@
 
     /* 橋を掛けられるか確認します */
     function canSetArch(elm1, elm2) {
-        var xy1, xy2;
+        var xy1, xy2, f;
 
         xy1 = getXYofCell(elm1);
         xy2 = getXYofCell(elm2);
 
-        if (arches.some(function(o) {
-            return isAcross(xy1, xy2, o[0], o[1]);
-        })) {
+        f = function (o) {return isAcross(xy1, xy2, o[0], o[1]);};
+
+        if (arches.red.some(f) || arches.blue.some(f)) {
             return false;
         }
 
@@ -370,11 +388,11 @@
         if (!start_elm.querySelector('.arch.'+xyToClassName(vector))) {
             setArch(start_elm, vector);
 
-            arches.push([xy1, xy2]);
+            arches[colors[color_index]].push([xy1, xy2]);
         }
         else {
             removeArch(start_elm, vector);
-            arches = arches.filter(function(v) {
+            arches[colors[color_index]] = arches[colors[color_index]].filter(function(v) {
                 return (v[0].x != xy1.x &&
                         v[0].y != xy1.y &&
                         v[1].x != xy2.x &&
