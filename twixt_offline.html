@@ -179,6 +179,11 @@
         -moz-transform: rotate(-63deg);
     }
 
+    #footer {
+        font-size: 12px;
+        text-align: right;
+        margin-top: 40px;
+    }
   </style>
  </head>
  <body>
@@ -204,16 +209,20 @@
   <script>
     var color_index = 0;
     var colors = ['red', 'blue'];
-    var is_setted = false;
+
     var src_arch = {red: "", blue: ""};
+
     var timer_id = null;
     var time_limit = 30;
-    var arches = [];
 
     var selected_stone_elm;
+    var arches = [];
+
+    var is_setted = false;
+    var is_game_over = false;
 
     /**
-     * 交点を求めるのに使用する計算式を生成します
+     * 交点の有無を求めるのに使用する計算式を生成します
      **/
     function generateCrossFunctions(pt1, pt2) {
         var x1 = pt1.x,
@@ -496,6 +505,10 @@
         src_arch["red"]  = "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAADwAAAACCAIAAACL7ij4AAAACXBIWXMAAC4jAAAuIwF4pT92AAAAE0lEQVQYlWOsYBh6gGmgHUAOAACtdgB833L6UgAAAABJRU5ErkJggg==";
     })();
   </script>
+  <div id="footer">
+    This page for Chromium(google chrome), Firefox. Never for IE.<br />
+    Twixt is invented by Alex Randolph.<br />
+    This page created by tkmry 2014/10/08-.
+  </div>
  </body>
 </html>
-
