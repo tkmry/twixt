@@ -228,8 +228,8 @@
    <tbody>
    </tbody>
   </table>
-  <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
-  <script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
+  <script type="module" src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
+  <script type="module" src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
   <script>
     /**
      * TODO: 毎ターン開始ごとに石/橋の状態を取得してhistoryに納めundo(待った)を作る
@@ -535,6 +535,7 @@
             selected_stone_elm = null;
         }
         else if (!canSetArch(selected_stone_elm, el)) {
+            /* pass */
         }
         else {
             toggleArch(selected_stone_elm, el);
@@ -553,6 +554,10 @@
     /* Timer 観測者 */
     function timeObserver() {
         var n, timer_elm;
+
+        if (is_game_over) {
+            return;
+        }
 
         timer_elm = document.querySelector('#timer');
         n = parseInt(timer_elm.value);
@@ -680,6 +685,11 @@
             "gB833L6UgAAAABJRU5ErkJggg=="].join('');
     })();
   </script>
+  <h2>Twixt (トゥィクスト) の基本的なルール</h2>
+  <p>Twixt は上下または左右へ自軍の領域を繋ぐボードゲームです。</p>
+  <p>プレイヤーは交互に石を置き、自軍の石に橋を架けていきます。</p>
+  <p>石と石がチェスでいうナイトの移動可能位置の関係にある際に橋を架けられます。</p>
+  <p>自他軍に関わらず交差するように橋は架けられません。</p>
   <div id="footer">
     This page for <a href="http://www.chromium.org/">Chromium</a>(<a href="https://www.google.co.jp/chrome/browser/">google chrome</a>), <a href="https://www.mozilla.org/firefox">Firefox</a>. Never for IE.<br />
     Twixt is invented by Alex Randolph.<br />
