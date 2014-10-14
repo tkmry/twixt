@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-   <meta charset="utf-8" />
-   <style>
+ <head>
+  <meta charset="utf-8" />
+  <style>
     input[type="radio"].turner {
         display: none;
     }
@@ -214,25 +214,26 @@
   <input type="radio" id="size18" name="board_size" class="board_size size18" value="18" checked />
   <input type="radio" id="size26" name="board_size" class="board_size size26" value="26" />
   <div id="turn_message">
-    <p class="message red stone">石を置いてください</p>
-    <p class="message red arch">橋を掛けられます</p>
-    <p class="message blue stone">石を置いてください</p>
-    <p class="message blue arch">橋を掛けられます</p>
+   <p class="message red stone">石を置いてください</p>
+   <p class="message red arch">橋を掛けられます</p>
+   <p class="message blue stone">石を置いてください</p>
+   <p class="message blue arch">橋を掛けられます</p>
   </div>
   <div id="control_box">
-    <label for="size12">12マス</label> <label for="size18">18マス</label> <label for="size26">26マス</label> <br />
+   <label for="size12">12マス</label> <label for="size18">18マス</label> <label for="size26">26マス</label> <br />
     残り<input id="timer" type="text" size="3" value="30" />sec<br />
-    <input id="turn_end" type="button" value="end" />
+   <input id="turn_end" type="button" value="end" />
   </div>
   <table border="1" align="center">
-    <tbody>
-    </tbody>
+   <tbody>
+   </tbody>
   </table>
+  <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
+  <script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
   <script>
     /**
      * TODO: 毎ターン開始ごとに石/橋の状態を取得してhistoryに納めundo(待った)を作る
      * TODO: Twixts オブジェクトにグローバル変数をまとめる
-     * TODO: 勝利条件を満たしているかのチェック関数を作る
      */
 
     var Twixt = {}; /* あとでこの変数にまとめる */
@@ -256,9 +257,112 @@
      * 勝負が決まっているか確認
      **/
     function isVictoried() {
-        var color;
+        var color, ls, f, path, garbage_arches;
+
+        function pathMap(path, f) {
+            f(path);
+            path.next.map(function(next) {
+                pathMap(next, f);
+            });
+        }
 
         color = colors[color_index];
+        ls = arches[color];
+
+        ls.sort(function(l, r) {
+            var x, y;
+
+            x = l[0].x - r[0].x;
+            y = l[0].y - r[0].y;
+
+            if (color == 'red') {
+                return x || y;
+            }
+            else {
+                return y || x;
+            }
+        });
+
+        /* ここから */
+        /*
+        if (!(ls[0][0].x == 0 || ls[0][0].y == 0 ||
+              ls[0][1].x == 0 || ls[0][1].y == 0)) {
+            return false;
+        }
+        if (!((ls[ls.length - 1][1].x == board_size - 1) ||
+              (ls[ls.length - 1][1].y == board_size - 1) ||
+              (ls[ls.length - 1][0].x == board_size - 1) ||
+              (ls[ls.length - 1][0].y == board_size - 1))) {
+            return false;
+        }
+        /* ここまで、後で後方へ移動します */
+
+        /**
+         * 橋の配列を左から右または上から下へ向かって走査しています。
+         * 橋が繋がっている時は次の要素を、繋がっていない場合は元の要素を繰り越します。
+         **/
+        path = {arch: null, next: []};
+        garbage_arches = [];
+
+        ls.map(function(arch) {
+            var gabage_reset;
+            
+            function isConnected(arch1, arch2) {
+                return arch1.some(function(pt1) {
+                    return arch2.some(function(pt2) {
+                        return (pt1.x == pt2.x &&
+                                pt1.y == pt2.y);
+                    });
+                })
+            }
+
+            function addPath(path, arch) {
+                if (isConnected(path.arch, arch)) {
+                    path.next.push({arch: arch, next: []});
+                    return true;
+                }
+
+                return path.next.some(function(next_path) {
+                    return addPath(next_path, arch);
+                });
+            }
+
+            if (path.arch == null) {
+                path.arch = arch;
+                return;
+            }
+
+            if (addPath(path, arch) == false) {
+                garbage_arches.push(arch);
+            }
+            else {
+                garbage_reset = true;
+                while (garbage_reset) {
+                    garbage_reset = false;
+                    garbage_arches = garbage_arches.filter(function(arch) {
+                        if (addPath(path, arch)) {
+                            garbage_reset = true;
+                            return false;
+                        }
+                        return true;
+                    });
+                }
+            }
+        });
+
+        if (!(path.arch[0].x == 0 || path.arch[0].y == 0) &&
+            !(path.arch[1].x == 0 || path.arch[1].y == 0)) {
+            return false;
+        }
+
+        f = false;
+        pathMap(path, function(p) {
+            if ((p.arch[1].x == (board_size - 1)) || (p.arch[1].y == (board_size - 1))) {
+                f = true;
+            }
+        });
+
+        return f;
     }
 
     /**
@@ -393,10 +497,10 @@
         else {
             removeArch(start_elm, vector);
             arches[colors[color_index]] = arches[colors[color_index]].filter(function(v) {
-                return (v[0].x != xy1.x &&
-                        v[0].y != xy1.y &&
-                        v[1].x != xy2.x &&
-                        v[1].y != xy2.y);
+                return !(v[0].x == xy1.x &&
+                        v[0].y == xy1.y &&
+                        v[1].x == xy2.x &&
+                        v[1].y == xy2.y);
             });
         }
     }
@@ -418,6 +522,10 @@
             return; /* 自分の石ではない */
         }
 
+        if (is_game_over) {
+            return;
+        }
+
         if (!selected_stone_elm) {
             el.classList.add('arch_select');
             selected_stone_elm = el;
@@ -430,6 +538,11 @@
         }
         else {
             toggleArch(selected_stone_elm, el);
+
+            if (isVictoried()) {
+                alert('勝負がつきました');
+                is_game_over = true;
+            }
 
             document.querySelector('.arch_select').classList.remove('arch_select');
             selected_stone_elm = null;
@@ -449,6 +562,7 @@
 
         if (n <= 0) {
             alert('Time out');
+            is_game_over = true;
         }
         else {
             timer_id = setTimeout(timeObserver, 1000);
@@ -461,6 +575,9 @@
 
         if (!ev.target.className.match(/\bcell\b/)) {
             return; /* マスに対するクリックではない */
+        }
+        if (is_game_over) {
+            return;
         }
 
         outline_color = document.defaultView.getComputedStyle(ev.target).outlineColor;
@@ -490,12 +607,21 @@
             document.body.querySelector('input.' + color + '.arch').checked = true;
 
             if (timer_id == null) {
-                setTimeout(timeObserver, 1000);
-                time_limit = parseInt(document.querySelector('#timer').value);
-                document.querySelector('#timer').disabled = true;
+                startGame();
             }
         }
     }, true);
+
+    /* ゲーム開始処理 */
+    function startGame () {
+        if (timer_id == null) {
+            setTimeout(timeObserver, 1000);
+            time_limit = parseInt(document.querySelector('#timer').value);
+            document.querySelector('#timer').disabled = true;
+
+            board_size = document.querySelector('.board_size:checked').value;
+        }
+    }
 
     /* ターンエンド処理 */
     document.body.querySelector('#turn_end').addEventListener('click', function() {
@@ -504,6 +630,9 @@
 
         if (!document.querySelector('.turner.arch:checked')){
             return; /* まだ石を置いてない */
+        }
+        if (is_game_over) {
+            return;
         }
 
         color_index = (color_index + 1) % colors.length;
@@ -541,8 +670,14 @@
             }
         }
 
-        src_arch["blue"] = "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAADwAAAACCAIAAACL7ij4AAAACXBIWXMAAC4jAAAuIwF4pT92AAAAFUlEQVQYlWNkYEhjGGqAaaAdQA4AAJNIAGp5t5xlAAAAAElFTkSuQmCC";
-        src_arch["red"]  = "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAADwAAAACCAIAAACL7ij4AAAACXBIWXMAAC4jAAAuIwF4pT92AAAAE0lEQVQYlWOsYBh6gGmgHUAOAACtdgB833L6UgAAAABJRU5ErkJggg==";
+        src_arch["blue"] = [
+            "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAADwAAAACCAIAAACL7",
+            "ij4AAAACXBIWXMAAC4jAAAuIwF4pT92AAAAFUlEQVQYlWNkYEhjGGqAaaAdQA4AA",
+            "JNIAGp5t5xlAAAAAElFTkSuQmCC"].join('');
+        src_arch["red"]  = [
+            "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAADwAAAACCAIAAACL7",
+            "ij4AAAACXBIWXMAAC4jAAAuIwF4pT92AAAAE0lEQVQYlWOsYBh6gGmgHUAOAACtd",
+            "gB833L6UgAAAABJRU5ErkJggg=="].join('');
     })();
   </script>
   <div id="footer">
