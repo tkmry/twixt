@@ -3,6 +3,64 @@
  <head>
   <meta charset="utf-8" />
   <style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    #header {
+        background-color: #000;
+        border-bottom: 2px solid #200;
+    }
+
+    #header h1 {
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    #header #show_rules_box {
+        color: #fff;
+        float: right;
+    }
+
+    #show_rules_box {
+        cursor: pointer;
+    }
+
+    #rules_box {
+        padding: 12px;
+        position: fixed;
+        z-index: 3;
+        top: 150px;
+        left: 150px;
+        right: 150px;
+        bottom: 150px;
+        overflow: auto;
+        background-color: #fff;
+        border: 1px solid #000;
+        border-radius: 5px;
+        box-shadow: 2px 2px 5px #000;
+    }
+
+    #rules_box > #rules_box_close {
+        cursor: pointer;
+        float: right;
+    }
+
+    #rules_box h2 {
+        margin: 0;
+    }
+
+    #rules_box #rules_box_details > p {
+        margin: 0;
+        margin-left: 40px;
+    }
+    #rules_box #rules_box_details > p:first-child {
+        clear: both;
+        margin-top: 18px;
+    }
+
     input[type="radio"].turner {
         display: none;
     }
@@ -12,26 +70,26 @@
 
     #turn_message p.message {
         display: none;
+        width: 400px;
         margin: 0;
-        padding: 0.5em;
         color: white;
         font-weight: bold;
         text-align: center; 
     }
 
-    .turner.red.stone:checked ~ #turn_message p.message.red.stone {
+    .turner.red.stone:checked ~ #control_box #turn_message p.message.red.stone {
         background-color: red;
         display: block;
     }
-    .turner.red.arch:checked ~ #turn_message p.message.red.arch {
+    .turner.red.arch:checked ~ #control_box #turn_message p.message.red.arch {
         background-color: red;
         display: block;
     }
-    .turner.blue.stone:checked ~ #turn_message p.message.blue.stone {
+    .turner.blue.stone:checked ~ #control_box #turn_message p.message.blue.stone {
         background-color: blue;
         display: block;
     }
-    .turner.blue.arch:checked ~ #turn_message p.message.blue.arch {
+    .turner.blue.arch:checked ~ #control_box #turn_message p.message.blue.arch {
         background-color: blue;
         display: block;
     }
@@ -55,16 +113,49 @@
     }
 
     #control_box {
-        margin: 10px;
-        text-align: center;
-        line-height: 30px;
+        position: fixed;
+        padding: 5px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-top: 1px solid #000;
+        background-color: #fff;
+        z-index: 4;
     }
+
+    #control_box #select_board_size {
+        float: left;
+        width: 230px;
+    }
+    #control_box .size {
+        border: 1px dashed #000;
+    }
+
+    input.board_size.size12:checked ~ #control_box .size12,
+    input.board_size.size18:checked ~ #control_box .size18,
+    input.board_size.size26:checked ~ #control_box .size26 {
+        background-color: gray;
+    }
+
+    #control_box #control_timer {
+        float: left;
+        width: 200px;
+    }
+
     #control_box #timer {
         text-align: right;
     }
+
+    #control_box #control_wait {
+        width: 200px;
+        float: left;
+    }
+
     #control_box input#turn_end {
         height: 30px;
     }
+
+
     .turner.arch:checked ~ #control_box input#turn_end {
         font-size: 22px;
         width: 60px;
@@ -80,6 +171,12 @@
         cursor: pointer;
         border-radius: 10px;
         position: relative;
+    }
+    .turner.red.stone:checked ~ table tr td:hover {
+        background-color: pink;
+    }
+    .turner.blue.stone:checked ~ table tr td:hover {
+        background-color: aqua;
     }
 
     tr:first-child > td,
@@ -98,6 +195,7 @@
     tr:last-child > td:last-child {
         visibility: hidden;
     }
+
 
     /* サイズを12に変更して遊びます */
     input.board_size.size12:checked ~ table tr:first-child > td:nth-child(12),
@@ -200,11 +298,32 @@
         font-size: 12px;
         text-align: right;
         margin-top: 40px;
+        margin-bottom: 80px;
     }
   </style>
  </head>
  <body>
-  <h1>Twixt Offline</h1>
+  <div id="header">
+   <div><span id="show_rules_box">ルールを表示</span></div>
+   <h1>Twixt Offline</h1>
+  </div>
+  <div id="rules_box">
+   <div id="rules_box_close"><a href="">[☓ Close]</a></div>
+   <h2>Twixt (トゥィクスト) のルールと操作 - Rules</h2>
+   <div id="rules_box_details">
+    <p>Twixt は上下または左右へ自軍の領域を繋ぐボードゲームです。</p>
+    <p>プレイヤーは交互に石を置き、自軍の石に橋を架けていきます。</p>
+    <p>石と石がチェスでいうナイトの移動可能位置の関係にある際に橋を架けられます。</p>
+    <p>自他軍に関わらず交差するように橋は架けられません。</p>
+   </div>
+   <div id="rules_box_rules">
+    <h3>ルール</h3>
+    <p><!-- 上記の文をこの要素の中に入れます --></p>
+   </div>
+   <div id="rules_box_operation">
+    <h3>操作方法</h3>
+   </div>
+  </div>
   <input type="radio" class="turner red stone " name="turn" value="red stone" checked="checked" />
   <input type="radio" class="turner red arch"   name="turn" value="red arch" />
   <input type="radio" class="turner blue stone" name="turn" value="blue stone" />
@@ -213,18 +332,31 @@
   <input type="radio" id="size12" name="board_size" class="board_size size12" value="12" />
   <input type="radio" id="size18" name="board_size" class="board_size size18" value="18" checked />
   <input type="radio" id="size26" name="board_size" class="board_size size26" value="26" />
-  <div id="turn_message">
-   <p class="message red stone">石を置いてください</p>
-   <p class="message red arch">橋を掛けられます</p>
-   <p class="message blue stone">石を置いてください</p>
-   <p class="message blue arch">橋を掛けられます</p>
-  </div>
   <div id="control_box">
-   <label for="size12">12マス</label> <label for="size18">18マス</label> <label for="size26">26マス</label> <br />
-    残り<input id="timer" type="text" size="3" value="30" />sec<br />
+   <div id="message_box">
+    <div id="turn_message">
+     <p class="message red stone">石を置いてください</p>
+     <p class="message red arch">橋を掛けられます</p>
+     <p class="message blue stone">石を置いてください</p>
+     <p class="message blue arch">橋を掛けられます</p>
+    </div>
+   </div>
+   <div id="select_board_size">
+    サイズ:
+    <label for="size12" class="size size12">12マス</label>
+    <label for="size18" class="size size18">18マス</label>
+    <label for="size26" class="size size26">26マス</label>
+   </div>
+   <div id="control_timer">
+    対局時計: <input id="timer" type="text" size="3" value="30" />sec<br />
+   </div>
+   <div id="control_wait">
+    <input type="button" value="待った！" />
+    <input type="button" value="待ったなし！" />
+   </div>
    <input id="turn_end" type="button" value="end" />
   </div>
-  <table border="1" align="center">
+  <table id="twixt_board" align="center">
    <tbody>
    </tbody>
   </table>
@@ -596,12 +728,10 @@
         }
         else if (colors[color_index] == 'blue' &&
                  outline_color.match(/(\d+), (\d+), (\d+)/)[1] == 255) {
-            console.log('blue', outline_color.match(/(\d+), (\d+), (\d+)/));
             /* pass */
         }
         else if (colors[color_index] == 'red' &&
                  outline_color.match(/(\d+), (\d+), (\d+)/)[3] == 255) {
-            console.log('red', outline_color.match(/(\d+), (\d+), (\d+)/));
             /* pass */
         }
         else {
@@ -626,6 +756,10 @@
             document.querySelector('#timer').disabled = true;
 
             board_size = document.querySelector('.board_size:checked').value;
+
+            Array.apply(0, document.querySelectorAll('input.board_size')).map(function(elm) {
+                elm.disabled = true;
+            });
         }
     }
 
@@ -656,6 +790,7 @@
         clearTimeout(timer_id);
         setTimeout(timeObserver, 1000);
         document.querySelector('#timer').value = time_limit;
+
     });
 
     /* 起動時処理 */
@@ -684,17 +819,22 @@
             "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAADwAAAACCAIAAACL7",
             "ij4AAAACXBIWXMAAC4jAAAuIwF4pT92AAAAE0lEQVQYlWOsYBh6gGmgHUAOAACtd",
             "gB833L6UgAAAABJRU5ErkJggg=="].join('');
+
+        document.querySelector('#show_rules_box').addEventListener('click', function(ev) {
+            document.querySelector('#rules_box').style.display = 'block';
+        });
+
+        document.querySelector('#rules_box_close').addEventListener('click', function(ev) {
+            document.querySelector('#rules_box').style.display = 'none';
+            ev.preventDefault();
+        });
     })();
   </script>
-  <h2>Twixt (トゥィクスト) の基本的なルール</h2>
-  <p>Twixt は上下または左右へ自軍の領域を繋ぐボードゲームです。</p>
-  <p>プレイヤーは交互に石を置き、自軍の石に橋を架けていきます。</p>
-  <p>石と石がチェスでいうナイトの移動可能位置の関係にある際に橋を架けられます。</p>
-  <p>自他軍に関わらず交差するように橋は架けられません。</p>
   <div id="footer">
     This page for <a href="http://www.chromium.org/">Chromium</a>(<a href="https://www.google.co.jp/chrome/browser/">google chrome</a>), <a href="https://www.mozilla.org/firefox">Firefox</a>. Never for IE.<br />
     Twixt is invented by Alex Randolph.<br />
-    This page created by <a href="http://github.com/tkmry">tkmry</a> 2014/10/08-.
+    This page created by <a href="http://github.com/tkmry">tkmry</a>(<a href="http://github.com/tkmry/twixt">Repository</a>) 2014/10/08-.
   </div>
  </body>
 </html>
+
