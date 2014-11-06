@@ -94,21 +94,21 @@
         display: block;
     }
 
-    .turner.arch:checked ~ table td {
+    .turner.arch:checked ~ table#twixt_board td {
         opacity: 0.5;
     }
-    .turner.red.arch:checked ~ table td.cell.red {
+    .turner.red.arch:checked ~ table#twixt_board td.cell.red {
         opacity: 1;
         cursor: pointer;
     }
-    .turner.red.arch:checked ~ table td.cell.blue {
+    .turner.red.arch:checked ~ table#twixt_board td.cell.blue {
         opacity: 0.3;
     }
-    .turner.blue.arch:checked ~ table td.cell.blue {
+    .turner.blue.arch:checked ~ table#twixt_board td.cell.blue {
         opacity: 1;
         cursor: pointer;
     }
-    .turner.blue.arch:checked ~ table td.cell.red {
+    .turner.blue.arch:checked ~ table#twixt_board td.cell.red {
         opacity: 0.3;
     }
 
@@ -162,112 +162,112 @@
         height: 30px;
     }
 
-    td {
+    #twixt_board td {
         width: 20px;
         height: 20px;
     }
 
-    tr td {
+    #twixt_board tr td {
         cursor: pointer;
         border-radius: 10px;
         position: relative;
     }
-    .turner.red.stone:checked ~ table tr td:hover {
+    .turner.red.stone:checked ~ table#twixt_board tr td:hover {
         background-color: pink;
     }
-    .turner.blue.stone:checked ~ table tr td:hover {
+    .turner.blue.stone:checked ~ table#twixt_board tr td:hover {
         background-color: aqua;
     }
 
-    tr:first-child > td,
-    tr:last-child > td {
+    #twixt_board tr:first-child > td,
+    #twixt_board tr:last-child > td {
         outline: 1px solid blue;
     }
-    tr > td:first-child,
-    tr > td:last-child {
+    #twixt_board tr > td:first-child,
+    #twixt_board tr > td:last-child {
         outline: 1px solid red;
     }
 
     /* 角の一マスは使用できないルールです */
-    tr:first-child > td:first-child,
-    tr:first-child > td:last-child,
-    tr:last-child > td:first-child,
-    tr:last-child > td:last-child {
+    #twixt_board tr:first-child > td:first-child,
+    #twixt_board tr:first-child > td:last-child,
+    #twixt_borad tr:last-child > td:first-child,
+    #twixt_borad tr:last-child > td:last-child {
         visibility: hidden;
     }
 
 
     /* サイズを12に変更して遊びます */
-    input.board_size.size12:checked ~ table tr:first-child > td:nth-child(12),
-    input.board_size.size12:checked ~ table tr:nth-child(12) > td:first-child, 
-    input.board_size.size12:checked ~ table tr:nth-child(12) > td:nth-child(12) {
+    input.board_size.size12:checked ~ table#twixt_board tr:first-child > td:nth-child(12),
+    input.board_size.size12:checked ~ table#twixt_board tr:nth-child(12) > td:first-child, 
+    input.board_size.size12:checked ~ table#twixt_board tr:nth-child(12) > td:nth-child(12) {
         visibility: hidden;
     }
-    input.board_size.size12:checked ~ table tr td:nth-child(12) ~ td, 
-    input.board_size.size12:checked ~ table tr:nth-child(12) ~ tr {
+    input.board_size.size12:checked ~ table#twixt_board tr td:nth-child(12) ~ td, 
+    input.board_size.size12:checked ~ table#twixt_board tr:nth-child(12) ~ tr {
         display: none;
     }
-    input.board_size.size12:checked ~ table tr:nth-child(12) > td {
+    input.board_size.size12:checked ~ table#twixt_board tr:nth-child(12) > td {
         outline: 1px solid blue;
     }
-    input.board_size.size12:checked ~ table tr > td:nth-child(12) {
+    input.board_size.size12:checked ~ table#twixt_board tr > td:nth-child(12) {
         outline: 1px solid red;
     }
 
     /* サイズを18に変更して遊びます */
-    input.board_size.size18:checked ~ table tr:first-child > td:nth-child(18),
-    input.board_size.size18:checked ~ table tr:nth-child(18) > td:first-child, 
-    input.board_size.size18:checked ~ table tr:nth-child(18) > td:nth-child(18) {
+    input.board_size.size18:checked ~ table#twixt_board tr:first-child > td:nth-child(18),
+    input.board_size.size18:checked ~ table#twixt_board tr:nth-child(18) > td:first-child, 
+    input.board_size.size18:checked ~ table#twixt_board tr:nth-child(18) > td:nth-child(18) {
         visibility: hidden;
     }
-    input.board_size.size18:checked ~ table tr td:nth-child(18) ~ td, 
-    input.board_size.size18:checked ~ table tr:nth-child(18) ~ tr {
+    input.board_size.size18:checked ~ table#twixt_board tr td:nth-child(18) ~ td, 
+    input.board_size.size18:checked ~ table#twixt_board tr:nth-child(18) ~ tr {
         display: none;
     }
-    input.board_size.size18:checked ~ table tr:nth-child(18) > td {
+    input.board_size.size18:checked ~ table#twixt_board tr:nth-child(18) > td {
         outline: 1px solid blue;
     }
-    input.board_size.size18:checked ~ table tr > td:nth-child(18) {
+    input.board_size.size18:checked ~ table#twixt_board tr > td:nth-child(18) {
         outline: 1px solid red;
     }
 
-    .turner.arch:checked ~ table tr td.cell {
+    .turner.arch:checked ~ table#twixt_board tr td.cell {
         cursor: auto;
     }
-    .turner.stone:checked ~ table tr td.cell.stoned {
+    .turner.stone:checked ~ table#twixt_board tr td.cell.stoned {
         cursor: auto;
     }
 
-    tr.odd td.odd {
+    #twixt_board tr.odd td.odd {
         background-color: white;
     }
-    tr.odd td.even {
+    #twixt_board tr.odd td.even {
         background-color: #ccc;
     }
-    tr.even td.odd {
+    #twixt_board tr.even td.odd {
         background-color: #ccc;
     }
-    tr.even td.even {
+    #twixt_board tr.even td.even {
         background-color: white;
     }
 
-    tr td.cell.red {
+    #twixt_board tr td.cell.red {
         background-color: red;
     }
-    tr td.cell.blue {
+    #twixt_board tr td.cell.blue {
         background-color: blue;
     }
 
-    tr td.cell.arch_select {
+    #twixt_board tr td.cell.arch_select {
         -webkit-transform: scale(1.5);
         -moz-transform: scale(1.5);
     }
-    tr td.cell.arch_select img {
+    #twixt_board tr td.cell.arch_select img {
         -webkit-transform: scale(0.66);
         -moz-transform: scale(0.66);
     }
 
-    tr td.cell img.arch {
+    #twixt_board tr td.cell img.arch {
         position: absolute;
         left: 10px;
         z-index: 2;
@@ -277,19 +277,19 @@
     }
 
     /* pNpM: p == plus, m = minus, N = x, M = y */
-    tr td.cell img.arch.p2p1 {
+    #twixt_board tr td.cell img.arch.p2p1 {
         -webkit-transform: rotate(26deg);
         -moz-transform: rotate(26deg);
     }
-    tr td.cell img.arch.p1p2 {
+    #twixt_board tr td.cell img.arch.p1p2 {
         -webkit-transform: rotate(62deg);
         -moz-transform: rotate(62deg);
     }
-    tr td.cell img.arch.p2m1 {
+    #twixt_board tr td.cell img.arch.p2m1 {
         -webkit-transform: rotate(-27deg);
         -moz-transform: rotate(-27deg);
     }
-    tr td.cell img.arch.p1m2 {
+    #twixt_board tr td.cell img.arch.p1m2 {
         -webkit-transform: rotate(-63deg);
         -moz-transform: rotate(-63deg);
     }
@@ -356,6 +356,27 @@
    </div>
    <input id="turn_end" type="button" value="end" />
   </div>
+  <table>
+    <tbody>
+      <tr>
+        <th rowspan="2">赤のターン</th>
+        <td>石を置いてください</td>
+      </tr>
+      <tr>
+        <td>橋を掛けられます</td>
+      </tr>
+      <tr>
+        <th rowspan="2">青のターン</th>
+        <td>石を置いてください</td>
+      </tr>
+      <tr>
+        <td>橋を掛けられます</td>
+      </tr>
+      <tr>
+        <td>ターンエンド(ボタンにします)</td>
+      </tr>
+    </tbody>
+  </table>
   <table id="twixt_board" align="center">
    <tbody>
    </tbody>
@@ -439,7 +460,7 @@
 
         ls.map(function(arch) {
             var gabage_reset;
-            
+
             function isConnected(arch1, arch2) {
                 return arch1.some(function(pt1) {
                     return arch2.some(function(pt2) {
@@ -600,7 +621,7 @@
 
         var img;
         var vector;
-        
+
         xy1 = getXYofCell(elm1);
         xy2 = getXYofCell(elm2);
 
@@ -784,7 +805,7 @@
             document.querySelector('.arch_select').classList.remove('arch_select');
             selected_stone_elm = null;
         }
-        
+
         is_setted = false;
 
         clearTimeout(timer_id);
@@ -795,7 +816,7 @@
 
     /* 起動時処理 */
     (function () {
-        var tbody = document.querySelector('tbody');
+        var tbody = document.querySelector('#twixt_board tbody');
         var tr, td;
 
         var col, row;
