@@ -68,6 +68,36 @@
         display: none;
     }
 
+    #phase_display {
+        float: right;
+        border-collapse: collapse;
+        border: 0;
+    }
+    #phase_display td {
+    }
+
+    input.turner.red.stone:checked ~ table#phase_display .turn.red,
+    input.turner.red.stone:checked ~ table#phase_display .red.stone {
+      background-color: red;
+      color: white;
+    }
+    input.turner.red.arch:checked ~ table#phase_display .turn.red,
+    input.turner.red.arch:checked ~ table#phase_display .red.arch {
+      background-color: red;
+      color: white;
+    }
+
+    input.turner.blue.stone:checked ~ table#phase_display .turn.blue,
+    input.turner.blue.stone:checked ~ table#phase_display .blue.stone {
+      background-color: blue;
+      color: white;
+    }
+    input.turner.blue.arch:checked ~ table#phase_display .turn.blue,
+    input.turner.blue.arch:checked ~ table#phase_display .blue.arch {
+      background-color: blue;
+      color: white;
+    }
+
     #turn_message p.message {
         display: none;
         width: 400px;
@@ -151,7 +181,7 @@
         float: left;
     }
 
-    #control_box input#turn_end {
+    input#turn_end {
         height: 30px;
     }
 
@@ -354,30 +384,28 @@
     <input type="button" value="待った！" />
     <input type="button" value="待ったなし！" />
    </div>
-   <input id="turn_end" type="button" value="end" />
   </div>
-  <table>
+  <table id="phase_display">
     <tbody>
       <tr>
-        <th rowspan="2">赤のターン</th>
-        <td>石を置いてください</td>
+        <th class="turn red" rowspan="2">赤のターン</th>
+        <td class="red stone">石を置いてください</td>
+      </tr> <tr>
+        <td class="red arch">橋を掛けられます</td>
       </tr>
       <tr>
-        <td>橋を掛けられます</td>
+        <th class="turn blue" rowspan="2">青のターン</th>
+        <td class="blue stone">石を置いてください</td>
       </tr>
       <tr>
-        <th rowspan="2">青のターン</th>
-        <td>石を置いてください</td>
+        <td class="blue arch">橋を掛けられます</td>
       </tr>
       <tr>
-        <td>橋を掛けられます</td>
-      </tr>
-      <tr>
-        <td>ターンエンド(ボタンにします)</td>
+        <td colspan="2" style="text-align: center;"><input id="turn_end" type="button" value="ターンエンド" /></td>
       </tr>
     </tbody>
   </table>
-  <table id="twixt_board" align="center">
+  <table border="1" id="twixt_board" align="center">
    <tbody>
    </tbody>
   </table>
@@ -387,7 +415,6 @@
     /**
      * TODO: 毎ターン開始ごとに石/橋の状態を取得してhistoryに納めundo(待った)を作る
      * TODO: Twixts オブジェクトにグローバル変数をまとめる
-     * TODO: ゲーム開始時にボードサイズを変更できないようにする
      */
 
     var Twixt = {}; /* あとでこの変数にまとめる */
